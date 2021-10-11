@@ -1,42 +1,45 @@
-def create_lst_max(lst, init, k_max):
+def all_sorted_asc(lst):
     '''
-    Creeaza cea mai lunga subsecventa cu o anumita proprietate.
-    :param init: int
-    :param k_max: int
-    :return: lst_max
+    Determina daca toate numerele dintr-o lista sun ordonate crescator.
+    :param lst: list[int]
+    :return: True, daca toate nr. din lst sunt ordonate crescator sau False, in caz contrar
     '''
-    lst_max = []
-    for i in range(init, init + k_max):
-        lst_max.append(lst[i])
-    return lst_max
+    for i in range(len(lst)-1):
+        if lst[i] >= lst[i+1]:
+            return False
+    return True
+
+def test_all_sorted_asc():
+    assert all_sorted_asc([2, 3, 4]) is True
+    assert all_sorted_asc([2, 4, 3]) is False
 
 def get_longest_sorted_asc(lst: list[int]) -> list[int]:
     '''
     Determina cea mai lunga subsecventa cu proprietatea ca numerele sunt ordonate crescator.
-    :param lst: int
-    :return: lst_max
+    :param lst: list[int]
+    :return: subsecventa_max: list[int]
     '''
-    k = 1
-    k_max = -1
-    for i in range(1, len(lst)):
-        if(lst[i] > lst[i-1]):
-            k = k+1
-        else:
-            if k > k_max:
-                k_max = k
-                init = i - k_max
-            k = 1
-    if len(lst) == 0:
-        return lst
-    else:
-        if k > k_max:
-            k_max = k
-            init = len(lst) - k_max
-        return create_lst_max(lst, init, k_max)
+    subsecventa_max = []
+    for i in range(len(lst)):
+        for j in range(i, len(lst)):
+            if all_sorted_asc(lst[i:j+1]) is True and len(lst[i:j+1]) > len(subsecventa_max):
+                subsecventa_max = lst[i:j+1]
+    return subsecventa_max
 
 def test_get_longest_sorted_asc():
     assert get_longest_sorted_asc([3, 4, 3, 5, 6]) == [3, 5, 6]
     assert get_longest_sorted_asc([3, 4, 5, 6, 7]) == [3, 4, 5, 6, 7]
+
+def all_prime_digits(lst):
+    '''
+    Determina daca toate numerele dintr-o lista sunt formate din cifre prime.
+    :param lst: list[int]
+    :return: True, daca toate nr. din lst sunt formate din cifre prime sau False, in caz contrar
+    '''
+    for x in lst:
+        if prime_digits(x) is False:
+            return False
+    return True
 
 def is_prime(x):
     '''
@@ -75,24 +78,15 @@ def test_prime_digits():
 def get_longest_prime_digits(lst: list[int]) -> list[int]:
     '''
     Determina cea mai lunga subsecventa cu proprietatea ca toate numerele sunt formate din cifre prime.
-    :param lst: int
-    :return: lst_max: int
+    :param lst: list[int]
+    :return: subsecventa_max: list[int]
     '''
-    k = 0
-    k_max = -1
+    subsecventa_max = []
     for i in range(len(lst)):
-        nr = lst[i]
-        if prime_digits(nr):
-            k = k + 1
-        else:
-            if k > k_max:
-                k_max = k
-                init = i - k_max
-            k = 0
-    if k > k_max:
-        k_max = k
-        init = len(lst) - k_max
-    return create_lst_max(lst, init, k_max)
+        for j in range(i, len(lst)):
+            if all_prime_digits(lst[i:j+1]) is True and len(lst[i:j+1]) > len(subsecventa_max):
+                subsecventa_max = lst[i:j+1]
+    return subsecventa_max
 
 def test_get_longest_prime_digits():
     assert get_longest_prime_digits([3, 4, 3, 5, 6]) == [3, 5]
@@ -106,9 +100,10 @@ def print_menu():
 
 def read_list():
     lst = []
-    n = int(input('Lungimea listei: '))
-    for i in range(n):
-        lst.append(int(input('lst[' + str(i) + '] = ')))
+    givenString = input("Dati lista, cu elemente separate prin virgula: ")
+    numbersAsString = givenString.split(",")
+    for x in numbersAsString:
+        lst.append(int(x))
     return lst
 
 def main():
